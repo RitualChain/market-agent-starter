@@ -4,6 +4,8 @@ import { useChat } from "@ai-sdk/react";
 import ChatInput from "@/components/chat-input";
 import type { MarketAgentUIMessage } from "@/agent/market-agent";
 import MarketView from "@/components/market-view";
+import CompareView from "@/components/compare-view";
+import PriceHistoryView from "@/components/price-history-view";
 import type { MarketUIToolInvocation } from "@/tool/market-tool";
 import Image from "next/image";
 import { Streamdown } from "streamdown";
@@ -251,6 +253,22 @@ export default function MarketChat() {
                                     }
                                     invocation={invocation}
                                   />
+                                );
+                              }
+                              case "tool-compare": {
+                                const inv = part as { state: string; comparisonData?: string; toolCallId?: string; id?: string };
+                                return inv.state === "ready" && inv.comparisonData ? (
+                                  <CompareView key={inv.toolCallId ?? inv.id ?? index} data={inv.comparisonData} />
+                                ) : (
+                                  <div key={index} className="text-[13px] text-zinc-300 mt-2">Comparing tokens…</div>
+                                );
+                              }
+                              case "tool-priceHistory": {
+                                const inv = part as { state: string; historyData?: string; toolCallId?: string; id?: string };
+                                return inv.state === "ready" && inv.historyData ? (
+                                  <PriceHistoryView key={inv.toolCallId ?? inv.id ?? index} data={inv.historyData} />
+                                ) : (
+                                  <div key={index} className="text-[13px] text-zinc-300 mt-2">Fetching price history…</div>
                                 );
                               }
                             }
