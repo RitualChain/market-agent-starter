@@ -40,6 +40,11 @@ async function fetchJson<T>(
 
     if (!res.ok) {
       const text = await res.text().catch(() => "");
+      if (res.status === 429) {
+        throw new Error(
+          "CoinGecko rate limit reached. Please wait a moment before retrying."
+        );
+      }
       throw new Error(
         `Market data request failed (${res.status} ${res.statusText})${
           text ? `: ${text}` : ""
@@ -48,6 +53,11 @@ async function fetchJson<T>(
     }
 
     return (await res.json()) as T;
+  } catch (err) {
+    if (err instanceof Error && err.name === "AbortError") {
+      throw new Error(`Market data request timed out after ${timeoutMs}ms`);
+    }
+    throw err;
   } finally {
     clearTimeout(timeout);
   }
