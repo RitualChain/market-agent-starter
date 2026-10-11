@@ -115,6 +115,11 @@ export const marketTool = tool({
         );
       }
 
+      const price = entry[vsCurrency];
+      if (typeof price !== 'number' || !Number.isFinite(price)) {
+        throw new Error(`Price data missing or invalid for contract ${tokenRaw} on ${chain}`);
+      }
+
       const summary = {
         provider: "coingecko",
         resolved: {
@@ -125,7 +130,7 @@ export const marketTool = tool({
         },
         quote: {
           vsCurrency,
-          price: entry[vsCurrency],
+          price,
           marketCap: entry[`${vsCurrency}_market_cap`],
           volume24h: entry[`${vsCurrency}_24h_vol`],
           change24h: entry[`${vsCurrency}_24h_change`],
@@ -195,6 +200,11 @@ export const marketTool = tool({
       );
     }
 
+    const priceValue = entry[vsCurrency];
+    if (typeof priceValue !== 'number' || !Number.isFinite(priceValue)) {
+      throw new Error(`Price data missing or invalid for ${best.id}`);
+    }
+
     const summary = {
       provider: "coingecko",
       resolved: {
@@ -206,7 +216,7 @@ export const marketTool = tool({
       },
       quote: {
         vsCurrency,
-        price: entry[vsCurrency],
+        price: priceValue,
         marketCap: entry[`${vsCurrency}_market_cap`],
         volume24h: entry[`${vsCurrency}_24h_vol`],
         change24h: entry[`${vsCurrency}_24h_change`],
